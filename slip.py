@@ -1,18 +1,17 @@
-# Dele contet of debug.log file
+# from datetime import datetime
 
-file = open("debug.log", "w")
-file.write("")
-file.close()
+# # Dele contet of debug.log file
+# file = open("debug.log", "w")
+# file.write("")
+# file.close()
 
-from datetime import datetime
-
-def debuger(string):
-    # Obter data e hora atuais no formato desejado
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+# def debuger(string):
+#     # Obter data e hora atuais no formato desejado
+#     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
-    # Abrir o arquivo de log e gravar a linha com timestamp
-    with open("debug.log", "a") as file:
-        file.write(f"[{timestamp}] {string}\n")
+#     # Abrir o arquivo de log e gravar a linha com timestamp
+#     with open("debug.log", "a") as file:
+#         file.write(f"[{timestamp}] {string}\n")
 
 def slip_encode(datagram):
     SLIP_END = 0xC0
