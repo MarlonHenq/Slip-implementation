@@ -1,3 +1,38 @@
+# Dele contet of debug.log file
+
+file = open("debug.log", "w")
+file.write("")
+file.close()
+
+from datetime import datetime
+
+def debuger(string):
+    # Obter data e hora atuais no formato desejado
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
+    # Abrir o arquivo de log e gravar a linha com timestamp
+    with open("debug.log", "a") as file:
+        file.write(f"[{timestamp}] {string}\n")
+
+def slip_encode(datagram):
+    SLIP_END = 0xC0
+    SLIP_ESC = 0xDB
+    SLIP_ESC_END = 0xDC
+    SLIP_ESC_ESC = 0xDD
+
+    frame = [SLIP_END]  # start SLIP frame with SLIP_END
+
+    for byte in datagram:
+        if byte == SLIP_END:
+            frame.extend([SLIP_ESC, SLIP_ESC_END])
+        elif byte == SLIP_ESC:
+            frame.extend([SLIP_ESC, SLIP_ESC_ESC])
+        else:
+            frame.append(byte)
+
+    frame.append(SLIP_END)  # End framwe
+
+    return bytearray(frame)
 class CamadaEnlace:
     ignore_checksum = False
 
@@ -48,10 +83,23 @@ class Enlace:
         self.callback = callback
 
     def enviar(self, datagrama):
-        # TODO: Preencha aqui com o código para enviar o datagrama pela linha
-        # serial, fazendo corretamente a delimitação de quadros e o escape de
-        # sequências especiais, de acordo com o protocolo CamadaEnlace (RFC 1055).
-        pass
+        """
+        Envia o datagrama pela linha serial utilizando o protocolo SLIP.
+        Insere um byte 0xC0 no início e no fim do datagrama.
+        """
+
+        #xodifica o datagrama com SLIP
+        datagrama2 = slip_encode(datagrama)
+        # # Byte especial de delimitação de quadro no SLIP
+        # SLIP_END = 0xC0
+        
+        # # Delimita o início e o fim do quadro com 0xC0
+        # quadro = bytearray([SLIP_END]) + datagrama2 + bytearray([SLIP_END])
+        
+        # Envia o quadro pela linha serial
+        self.linha_serial.enviar((datagrama2))
+        #print(quadro)
+        debuger(str(datagrama2))
 
     def __raw_recv(self, dados):
         # TODO: Preencha aqui com o código para receber dados da linha serial.
